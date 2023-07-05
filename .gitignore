@@ -1,1 +1,7 @@
-log/
+# log directory
+log/*
+!log/.gitkeep
+
+# python
+*.pyc
+venv/

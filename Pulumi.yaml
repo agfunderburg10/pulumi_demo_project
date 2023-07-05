@@ -1,0 +1,6 @@
+name: pulumi_demo_project
+runtime:
+  name: python
+  options:
+    virtualenv: venv
+description: Example reverse proxy container service

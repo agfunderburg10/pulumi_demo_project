@@ -1,4 +1,4 @@
-FROM nginx:1.15
+FROM --platform=linux/amd64 nginx:1.15
 
 RUN rm /etc/nginx/conf.d/default.conf
 
