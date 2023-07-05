@@ -11,12 +11,17 @@ memory = config.get_int("memory", 128)
 cluster = aws.ecs.Cluster("cluster")
 
 # An ALB to serve the container endpoint to the internet
-loadbalancer = awsx.lb.ApplicationLoadBalancer("loadbalancer")
+loadbalancer = awsx.lb.ApplicationLoadBalancer(
+    "loadbalancer",
+)
 
 # An ECR repository to store our application's container image
-repo = awsx.ecr.Repository("repo", awsx.ecr.RepositoryArgs(
-    force_delete=True,
-))
+repo = awsx.ecr.Repository(
+    "repo",
+    awsx.ecr.RepositoryArgs(
+        force_delete=True,
+    ),
+)
 
 # Build and publish our application's container image from ./app to the ECR repository
 image = awsx.ecr.Image(
@@ -24,9 +29,8 @@ image = awsx.ecr.Image(
     repository_url=repo.url,
     path="./app",
     # specify amd64 arch to run on Fargate to avoid issues when deployed from Mac M1
-    extra_options=[
-        '--platform=linux/amd64'
-    ])
+    extra_options=["--platform=linux/amd64"],
+)
 
 # Deploy an ECS Service on Fargate to host the application container
 service = awsx.ecs.FargateService(
@@ -39,12 +43,15 @@ service = awsx.ecs.FargateService(
             cpu=cpu,
             memory=memory,
             essential=True,
-            port_mappings=[awsx.ecs.TaskDefinitionPortMappingArgs(
-                container_port=container_port,
-                target_group=loadbalancer.default_target_group,
-            )],
+            port_mappings=[
+                awsx.ecs.TaskDefinitionPortMappingArgs(
+                    container_port=container_port,
+                    target_group=loadbalancer.default_target_group,
+                )
+            ],
         ),
-    ))
+    ),
+)
 
 # The URL at which the container's HTTP endpoint will be available
 export("url", Output.concat("http://", loadbalancer.load_balancer.dns_name))
