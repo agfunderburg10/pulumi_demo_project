@@ -4,3 +4,7 @@ runtime:
   options:
     virtualenv: venv
 description: Example reverse proxy container service
+config:
+
+  # Uncomment debug port to allow for attaching to pulumi __main__.py script
+  debug_port: 9500

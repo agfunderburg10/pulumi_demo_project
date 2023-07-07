@@ -5,13 +5,13 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "Pulumi Preview Attach",
+            "name": "Pulumi Attach",
             "type": "python",
             "request": "attach",
             // "preLaunchTask": "pulumi_preview",
             "connect": {
                 "host": "localhost",
-                "port": 5678
+                "port": 9500
             },
             "pathMappings": [
                 {

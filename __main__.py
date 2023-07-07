@@ -4,14 +4,28 @@ import pulumi_awsx as awsx
 
 import debugpy
 
-debugpy.listen(("localhost", 5678))
-debugpy.wait_for_client()
-debugpy.breakpoint()
-
 config = Config()
+
+debug_port = config.get_int("debug_port", None)
+
+if debug_port:
+    debugpy.listen(("localhost", debug_port))
+    debugpy.wait_for_client()
+    debugpy.breakpoint()
+
 container_port = config.get_int("containerPort", 80)
 cpu = config.get_int("cpu", 512)
 memory = config.get_int("memory", 128)
+
+common_vpc = aws.ec2.get_vpc(
+    # id='vpc-097202f5a26c3d536',
+    filters=[
+        {
+            "name": "tag:Name",
+            "values": ["common"],
+        }
+    ],
+)
 
 # An ECS cluster to deploy into
 cluster = aws.ecs.Cluster("cluster")
@@ -42,7 +56,7 @@ image = awsx.ecr.Image(
 service = awsx.ecs.FargateService(
     "service",
     cluster=cluster.arn,
-    assign_public_ip=True,
+    assign_public_ip=False,
     task_definition_args=awsx.ecs.FargateServiceTaskDefinitionArgs(
         container=awsx.ecs.TaskDefinitionContainerDefinitionArgs(
             image=image.image_uri,
